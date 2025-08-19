@@ -21,8 +21,7 @@ public class RoleController {
 		{
 			add(new Role(UUID.randomUUID().toString(), "Werewolf", "Wake up and kill someone at night", 1));
 			add(new Role(UUID.randomUUID().toString(), "Seer", "Can inspect one player’s role at night", 1));
-			add(new Role(UUID.randomUUID().toString(), "Guardian", "Protect one player from being killed each night",
-					1));
+			add(new Role(UUID.randomUUID().toString(), "Guardian", "Protect one player from being killed at night", 1));
 			add(new Role(UUID.randomUUID().toString(), "Villager", "No special ability, just votes during the day", 1));
 			add(new Role(UUID.randomUUID().toString(), "Major", "Able to vote with 2x vote weight during the day", 1));
 			add(new Role(UUID.randomUUID().toString(), "Werewolf", "Wake up and kill someone at night", 1));
@@ -43,8 +42,6 @@ public class RoleController {
 
 	@Route(path = "/randomize")
 	public String randomlyGetAvailableRole() {
-		System.out.println("aaaa");
-		
 		List<Role> availableRoles = validRole.stream().filter(r -> r.getAvailable() == 1).collect(Collectors.toList());
 
 		if (availableRoles.isEmpty()) {

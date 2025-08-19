@@ -22,8 +22,11 @@ import app.others.annotation.QueryParam;
 import app.others.annotation.Route;
 import app.others.annotation.Routes;
 import app.others.enumeration.HttpMethod;
+import app.others.util.ResponseBuilder;
 
 public class Router implements HttpHandler {
+
+	private ResponseBuilder rb;
 
 	private static class RouteDefinition {
 		Pattern pattern;
@@ -40,7 +43,6 @@ public class Router implements HttpHandler {
 			this.paramNames = paramNames;
 			this.httpMethod = httpMethod;
 		}
-
 	}
 
 	// All the defined route (method in controller)
@@ -63,7 +65,6 @@ public class Router implements HttpHandler {
 			// iterate methods in controller class
 			for (Method method : controllerClass.getDeclaredMethods()) {
 				if (method.isAnnotationPresent(Route.class) || method.isAnnotationPresent(Routes.class)) {
-					// Route is repeatable, so we need to capture all route defined above a method
 					Route[] routeAnnotations = method.getAnnotationsByType(Route.class);
 
 					// iterate through all the annotations (if more than 1, if not then it will only
@@ -78,19 +79,22 @@ public class Router implements HttpHandler {
 							// we only consider things wrapped with { } as path param, other than that, then
 							// it's just part of the path
 							if (pathParam.startsWith("{") && pathParam.endsWith("}")) {
-								String name = pathParam.substring(1, pathParam.length() - 1);
-								paramNames.add(name);
-								return "([^/]+)";
+								String name = pathParam.substring(1, pathParam.length() - 1); // only take whats between
+																								// {}
+								paramNames.add(name); // store the name to a list in RouteDefinition
+								return "([^/]+)"; // regex for injectable
 							}
 							return pathParam;
-						}).reduce((a, b) -> a + "/" + b).orElse("");
+						}).reduce((a, b) -> a + "/" + b).orElse(""); // Make the result to a single data instead of
+																		// array
 
-						Pattern pattern = Pattern.compile("^" + regexPath + "$");
+						Pattern pattern = Pattern.compile("^" + regexPath + "$"); // store the regex pattern in
+																					// RouteDefinition
 
 						RouteDefinition routeDefinition = new RouteDefinition(pattern, method, controllerInstance,
 								paramNames, route.method());
 
-						routes.add(routeDefinition);
+						routes.add(routeDefinition); // Add RouteDefinition
 					}
 
 				}
@@ -102,28 +106,16 @@ public class Router implements HttpHandler {
 		}
 	}
 
-	private void sendResponse(HttpExchange exchange, int statusCode, String response) throws IOException {
-		exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
-		exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-		exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type, Authorization");
-		
-		byte[] bytes = response.getBytes();
-		exchange.getResponseHeaders().add("Content-Type", "application/json");
-		exchange.sendResponseHeaders(statusCode, bytes.length);
-		try (var os = exchange.getResponseBody()) {
-			os.write(bytes);
-		}
-	}
-
 	@Override
 	public void handle(HttpExchange exchange) throws IOException {
+		rb = new ResponseBuilder(exchange);
 		String requestPath = exchange.getRequestURI().getPath();
 		HttpMethod requestMethod;
 
 		try {
 			requestMethod = HttpMethod.valueOf(exchange.getRequestMethod().toUpperCase());
 		} catch (Exception e) {
-			sendResponse(exchange, 405, "{\"error\":\"Method Not Allowed\"}");
+			rb.setStatusCode(405).setBody("{\"error\":\"Method Not Allowed\"}").send();
 			return;
 		}
 
@@ -146,7 +138,7 @@ public class Router implements HttpHandler {
 			}
 
 			if (matched == null) {
-				sendResponse(exchange, 404, "{\"error\":\"Not Found\"}");
+				rb.setStatusCode(404).setBody("{\"error\":\"Not Found\"}").send();
 				return;
 			}
 
@@ -197,7 +189,7 @@ public class Router implements HttpHandler {
 			response = "{\"error\":\"Internal Server Error\"}";
 			statusCode = 500;
 		}
-		sendResponse(exchange, statusCode, response);
+		rb.setStatusCode(statusCode).setBody(response).send();
 	}
 
 }
