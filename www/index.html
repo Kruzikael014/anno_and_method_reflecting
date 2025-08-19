@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Werewolf Role Announcement</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div id="loading" class="loading">
+            <div class="loading-text">Loading your role...</div>
+        </div>
+        
+        <div id="role-card" class="role-card hidden">
+            <!-- Role Icon -->
+            <div class="role-icon-container">
+                <div id="role-icon" class="role-icon"></div>
+            </div>
+
+            <!-- Role Name -->
+            <h1 id="role-name" class="role-name"></h1>
+
+            <!-- Role Description -->
+            <p id="role-description" class="role-description"></p>
+
+            <!-- Additional Info -->
+            <div class="role-info">
+                <p id="role-id" class="role-id"></p>
+                <p id="role-available" class="role-available"></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
