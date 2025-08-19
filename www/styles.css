@@ -1,0 +1,110 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f172a 0%, #581c87 50%, #0f172a 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.container {
+  width: 100%;
+  max-width: 28rem;
+}
+
+.loading {
+  text-align: center;
+}
+
+.loading-text {
+  color: white;
+  font-size: 1.25rem;
+}
+
+.role-card {
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  border-radius: 0.5rem;
+  padding: 2rem;
+  text-align: center;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.hidden {
+  display: none;
+}
+
+.role-icon-container {
+  margin-bottom: 1.5rem;
+}
+
+.role-icon {
+  font-size: 5rem;
+  margin-bottom: 1rem;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.role-name {
+  font-size: 2.25rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+}
+
+.role-description {
+  color: #d1d5db;
+  font-size: 1.125rem;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.role-info {
+  font-size: 0.875rem;
+  color: #9ca3af;
+  border-top: 1px solid #4b5563;
+  padding-top: 1rem;
+}
+
+.role-info p {
+  margin-top: 0.25rem;
+}
+
+/* Role-specific colors */
+.werewolf {
+  color: #dc2626;
+}
+.seer {
+  color: #9333ea;
+}
+.guardian {
+  color: #2563eb;
+}
+.villager {
+  color: #16a34a;
+}
+.major {
+  color: #ca8a04;
+}
+.spectator {
+  color: #6b7280;
+}
+.default {
+  color: #6b7280;
+}
