@@ -6,6 +6,8 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import app.exception.HttpException;
+import app.exception.HttpNotFoundException;
 import app.model.Role;
 import app.others.annotation.Body;
 import app.others.annotation.Controller;
@@ -35,8 +37,9 @@ public class RoleController {
 	}
 
 	@Route(path = "/{id}")
-	public String getRole(@PathParam("id") String id) {
-		Role role = validRole.stream().filter(r -> r.getRoleId().equals(id)).findFirst().orElse(null);
+	public String getRole(@PathParam("id") String id) throws HttpException {
+		Role role = validRole.stream().filter(r -> r.getRoleId().equals(id)).findFirst()
+				.orElseThrow(() -> new HttpNotFoundException());
 		return JsonUtil.toJson(role);
 	}
 
@@ -45,7 +48,7 @@ public class RoleController {
 		List<Role> availableRoles = validRole.stream().filter(r -> r.getAvailable() == 1).collect(Collectors.toList());
 
 		if (availableRoles.isEmpty()) {
-			return "{\"error\":\"No roles available\"}";
+			throw new HttpNotFoundException();
 		}
 
 		int idx = random.nextInt(availableRoles.size());

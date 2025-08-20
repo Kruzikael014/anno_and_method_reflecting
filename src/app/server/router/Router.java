@@ -1,6 +1,7 @@
 package app.server.router;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -14,6 +15,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+
+import app.exception.HttpException;
 import app.exception.NotYetClassifiedException;
 import app.others.annotation.Body;
 import app.others.annotation.Controller;
@@ -181,6 +184,17 @@ public class Router implements HttpHandler {
 
 				response = (result != null) ? result.toString() : "";
 				statusCode = 200;
+			} catch (InvocationTargetException ite) {
+				Throwable cause = ite.getCause();
+				if (cause instanceof HttpException) {
+					HttpException e = (HttpException) cause;
+					rb.setStatusCode(e.getStatusCode()).setBody("{\"error\":\"" + e.getMessage() + "\"}").send();
+					return;
+				} else {
+					rb.setStatusCode(500).setBody("{\"error\":\"Internal Server Error\"}").send();
+					ite.printStackTrace();
+					return;
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
